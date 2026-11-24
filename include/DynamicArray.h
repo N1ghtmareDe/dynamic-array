@@ -7,28 +7,32 @@ private:
     int* data;  
     int size;   
 
-    static bool isValueOk(int value);
+    
+    void checkIndex(int index) const;
+
+    static void checkValue(int value);
 
 public:
+    
     DynamicArray(int size);
-
+    
     DynamicArray(const DynamicArray& other);
 
+    
     ~DynamicArray();
 
-  
     void print() const;
 
+    
     int getSize() const;
 
-    
-    bool set(int index, int value);
+    void set(int index, int value);
 
     
-    bool get(int index, int& value) const;
-
-    bool push_back(int value);
-
+    int get(int index) const;
+   
+    void push_back(int value);
+    
     void add(const DynamicArray& other);
     void subtract(const DynamicArray& other);
 };
