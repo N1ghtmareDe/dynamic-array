@@ -1,76 +1,79 @@
 #include <iostream>
+#include <string>
 #include <stdexcept>
-#include <new>
-#include <cstddef>  
+#include <typeinfo>
 #include "../include/DynamicArray.h"
 
 using namespace std;
 
 int main() {
-    DynamicArray a(5);
-    a.set(0, 10);
-    a.set(1, -20);
-    a.set(2, 100);
-    cout << "Массив a: ";
-    a.print();
+    cout << "Задание 2: вывод через <<" << endl;
+    DynamicArray<int> a(3);
+    a.set(0, 1);
+    a.set(1, 2);
+    a.set(2, 3);
+    cout << "Массив int:    " << a << endl;
 
-    
-    cout << endl << "Проверка out_of_range (индекс вне границ) " << endl;
+    DynamicArray<double> d(3);
+    d.set(0, 1.5);
+    d.set(1, 250.75);
+    d.set(2, -3.25);
+    cout << "Массив double: " << d << endl;
 
-    try {
-        a.set(5, 1);  
-    } catch (const out_of_range& e) {
-        cout << "Поймано out_of_range (сеттер): " << e.what() << endl;
-    }
+    DynamicArray<string> s(2);
+    s.set(0, "привет");
+    s.set(1, "мир");
+    cout << "Массив string: " << s << endl;
 
-    try {
-        int x = a.get(-1);
-        cout << x << endl;
-    } catch (const out_of_range& e) {
-        cout << "Поймано out_of_range (геттер): " << e.what() << endl;
-    }
-
-    
-    cout << endl << " Проверка invalid_argument (значение вне -100...100) ===" << endl;
+    cout << endl << "Задание 1: проверка значений только для целых типов" << endl;
 
     try {
-        a.set(0, 101);
+        a.set(0, 500);
     } catch (const invalid_argument& e) {
-        cout << "Поймано invalid_argument (сеттер): " << e.what() << endl;
+        cout << "int: поймано invalid_argument: " << e.what() << endl;
     }
 
+    d.set(0, 500.5);
+    cout << "double: значение 500.5 записалось без ошибки: " << d << endl;
+
+    s.push_back("любая строка");
+    cout << "string: строка добавилась без ошибки: " << s << endl;
+
+    cout << endl << "Задание 3: расстояние между массивами" << endl;
+
+    DynamicArray<int> p(3);
+    p.set(0, 0);
+    p.set(1, 0);
+    p.set(2, 0);
+    DynamicArray<int> q(3);
+    q.set(0, 3);
+    q.set(1, 4);
+    q.set(2, 0);
+    cout << "p = " << p << ", q = " << q << endl;
+    cout << "Расстояние между p и q (int): " << p.distance(q) << endl;
+
+    DynamicArray<double> d1(2);
+    d1.set(0, 1.0);
+    d1.set(1, 1.0);
+    DynamicArray<double> d2(2);
+    d2.set(0, 4.0);
+    d2.set(1, 5.0);
+    cout << "d1 = " << d1 << ", d2 = " << d2 << endl;
+    cout << "Расстояние между d1 и d2 (double): " << d1.distance(d2) << endl;
+
+    DynamicArray<int> shortArr(2);
     try {
-        a.push_back(-500);
+        p.distance(shortArr);
     } catch (const invalid_argument& e) {
-        cout << "Поймано invalid_argument (push_back): " << e.what() << endl;
+        cout << "Разные размеры: поймано invalid_argument: " << e.what() << endl;
     }
 
+    DynamicArray<string> s1(2);
+    DynamicArray<string> s2(2);
     try {
-        DynamicArray bad(-3); 
-    } catch (const invalid_argument& e) {
-        cout << "Поймано invalid_argument (конструктор): " << e.what() << endl;
-    }
-
-    
-    cout << endl << "=== Проверка bad_alloc (не хватило памяти) ===" << endl;
-
-    try {
-        
-        size_t hugeSize = static_cast<size_t>(-1) / 2;
-        int* p = new int[hugeSize];
-        delete[] p;  
-    } catch (const bad_alloc& e) {
-        cout << "Поймано bad_alloc: не удалось выделить память" << endl;
-    }
-
-    cout << endl << "=== Обычная работа (без ошибок) ===" << endl;
-    try {
-        a.push_back(42);
-        cout << "После push_back(42): ";
-        a.print();
-        cout << "a.get(1) = " << a.get(1) << endl;
-    } catch (const exception& e) {
-        cout << "Неожиданная ошибка: " << e.what() << endl;
+        s1.distance(s2);
+    } catch (const bad_typeid& e) {
+        cout << "string: поймано bad_typeid (для нечисловых типов расстояние не считается)" << endl;
     }
 
     return 0;
