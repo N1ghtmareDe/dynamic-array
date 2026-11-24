@@ -1,29 +1,40 @@
 #include <iostream>
+#include <stdexcept>  
+#include <new>        
 #include "../include/DynamicArray.h"
 
 using namespace std;
 
 
-bool DynamicArray::isValueOk(int value) {
-    return value >= -100 && value <= 100;
+void DynamicArray::checkIndex(int index) const {
+    if (index < 0 || index >= size) {
+        throw out_of_range("Индекс " + to_string(index) + " выходит за границы массива");
+    }
+}
+
+void DynamicArray::checkValue(int value) {
+    if (value < -100 || value > 100) {
+        throw invalid_argument("Значение " + to_string(value) + " не входит в промежуток от -100 до 100");
+    }
 }
 
 
 DynamicArray::DynamicArray(int size) {
     if (size < 0) {
-        size = 0;  
+        throw invalid_argument("Размер массива не может быть отрицательным");
     }
     this->size = size;
-    this->data = new int[size];  
+    
+    this->data = new int[size];
     for (int i = 0; i < size; i++) {
-        data[i] = 0;             
+        data[i] = 0;
     }
 }
 
-// (Задание 2
+
 DynamicArray::DynamicArray(const DynamicArray& other) {
     this->size = other.size;
-    this->data = new int[size];
+    this->data = new int[size]; 
     for (int i = 0; i < size; i++) {
         data[i] = other.data[i];
     }
@@ -31,10 +42,10 @@ DynamicArray::DynamicArray(const DynamicArray& other) {
 
 
 DynamicArray::~DynamicArray() {
-    delete[] data;  
+    delete[] data;
 }
 
-// Вывод
+
 void DynamicArray::print() const {
     cout << "[";
     for (int i = 0; i < size; i++) {
@@ -51,51 +62,32 @@ int DynamicArray::getSize() const {
 }
 
 
-bool DynamicArray::set(int index, int value) {
-    if (index < 0 || index >= size) {
-        cout << "Ошибка: индекс " << index << " выходит за границы массива" << endl;
-        return false;
-    }
-    if (!isValueOk(value)) {
-        cout << "Ошибка: значение " << value << " не входит в промежуток от -100 до 100" << endl;
-        return false;
-    }
+void DynamicArray::set(int index, int value) {
+    checkIndex(index);  
+    checkValue(value);  
     data[index] = value;
-    return true;
 }
 
 
-bool DynamicArray::get(int index, int& value) const {
-    if (index < 0 || index >= size) {
-        cout << "Ошибка: индекс " << index << " выходит за границы массива" << endl;
-        return false;
-    }
-    value = data[index];
-    return true;
+int DynamicArray::get(int index) const {
+    checkIndex(index);  
+    return data[index];
 }
 
-// Задание 3
-bool DynamicArray::push_back(int value) {
-    if (!isValueOk(value)) {
-        cout << "Ошибка: значение " << value << " не входит в промежуток от -100 до 100" << endl;
-        return false;
-    }
-    
-    int* newData = new int[size + 1];
-    // 2. Копируем в него старые элементы
+
+void DynamicArray::push_back(int value) {
+    checkValue(value); 
+
+    int* newData = new int[size + 1];  
     for (int i = 0; i < size; i++) {
         newData[i] = data[i];
     }
-    
     newData[size] = value;
-   
+
     delete[] data;
     data = newData;
     size++;
-    return true;
 }
-
-//Задание 4
 
 void DynamicArray::add(const DynamicArray& other) {
     for (int i = 0; i < size; i++) {
@@ -107,7 +99,7 @@ void DynamicArray::add(const DynamicArray& other) {
     }
 }
 
-// (Задание 4
+
 void DynamicArray::subtract(const DynamicArray& other) {
     for (int i = 0; i < size; i++) {
         int otherValue = 0;
